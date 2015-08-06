@@ -1,5 +1,3 @@
-{-#language TypeSynonymInstances #-}
-{-#language FlexibleInstances #-}
 module Main where
 
 import Control.Monad
@@ -10,6 +8,11 @@ import Data.Default
 
 newtype Email   = Email String deriving(Eq, Show)
 newtype LogPath = LogPath String deriving(Eq, Show)
+
+getEmail :: Email -> String
+getEmail (Email e) = e
+getLogPath :: LogPath -> String
+getLogPath (LogPath p) = p
 instance Default Email where
     def = Email ""
 instance Default LogPath where 
@@ -36,4 +39,5 @@ getFlags args = let email = defMaybe $ lookup "-e" args
 main = do
     args  <- (liftM cvt) getArgs
     flags <- return $ getFlags args
-    print flags
+    logContent <- (readFile . getLogPath . logPath) flags
+    putStr logContent
