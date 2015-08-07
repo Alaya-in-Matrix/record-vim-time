@@ -1,4 +1,6 @@
 *.swp
+test/
+run.sh
 # Created by https://www.gitignore.io
 
 ### Haskell ###
