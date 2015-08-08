@@ -5,7 +5,7 @@ name:                record-vim-time
 version:             0.1.0.0
 -- synopsis:            
 -- description:         
-license:             MIT
+license:             WTFPL
 license-file:        LICENSE
 author:              lvwenlong
 maintainer:          lvwenlong_lambda@qq.com
