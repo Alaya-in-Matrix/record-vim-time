@@ -1,5 +1,6 @@
 module Main where
-
+-- Author: lvwenlong_lambda@qq.com
+-- Last Modified:CST 2015-08-08 20:02:08 星期六
 import Control.Monad
 import Text.ParserCombinators.Parsec
 import System.Environment

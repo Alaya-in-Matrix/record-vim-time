@@ -1,7 +1,7 @@
 # Readme
 
 * Author: lvwenlong_lambda@qq.com
-* Last Modified:2015年08月08日 星期六 19时28分14秒 六
+* Last Modified:CST 2015-08-08 20:01:42 星期六
 
 ## About this project
 
