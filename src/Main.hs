@@ -1,6 +1,6 @@
 module Main where
 -- Author: lvwenlong_lambda@qq.com
--- Last Modified:CST 2015-08-08 20:02:08 星期六
+-- Last Modified:CST 2015-08-09 13:35:07 星期日
 import Control.Monad
 import Text.ParserCombinators.Parsec
 import System.Environment
@@ -19,16 +19,18 @@ data VimLogTime = VimLogTime {
   , vimLogMinute :: Int
   , vimLogSecond :: Int
 } deriving(Eq, Show)
-data VimLogAction = Create | Open | Write deriving(Eq, Show)
+data VimLogAction    = Create | Open | Write deriving(Eq, Show)
 type VimLogGitBranch = String
+type VimFileType     = String
 data VimLog = VimLog {
     time       :: VimLogTime
   , action     :: VimLogAction
   , editedfile :: FilePath
+  , filetype   :: VimFileType
   , gitbranch  :: Maybe VimLogGitBranch
 } deriving(Eq)
 instance Show VimLog where 
-    show (VimLog t a e g) = "VimLog {\n    " ++ show t ++ "\n    " ++ show a ++ "\n    " ++ e ++ "\n    " ++ show g ++ "\n}"
+    show (VimLog t a e ft g) = "VimLog {\n    " ++ show t ++ "\n    " ++ show a ++ "\n    " ++ e ++ "\n    " ++ ft ++ "\n    " ++ show g ++ "\n}"
 
 secondOfDay :: VimLogTime -> Integer
 secondOfDay t = let h = toInteger $ vimLogHour   t
@@ -45,6 +47,7 @@ logParser :: Parser VimLog
 logParser = VimLog <$> (logTimeParser  <* delimiter)
                    <*> (actionParser   <* delimiter)
                    <*> (filePathParser <* delimiter)
+                   <*> (filePathParser <* delimiter)
                    <*> branchParser
    where delimiter = char ';'
 
@@ -55,6 +58,9 @@ logTimeParser = VimLogTime <$> (read <$> many1   digit <* char '-')     -- year
                            <*> (read <$> count 2 digit <* char ':')     -- hour
                            <*> (read <$> count 2 digit <* char ':')     -- minute
                            <*> (read <$> count 2 digit)                 -- second
+
+fileTypeParser :: Parser VimFileType 
+fileTypeParser = many1 (noneOf ";") 
 
 actionParser :: Parser VimLogAction
 actionParser = (Create <$ string "create")
