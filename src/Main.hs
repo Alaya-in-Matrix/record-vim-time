@@ -1,9 +1,10 @@
 module Main where
 -- Author: lvwenlong_lambda@qq.com
--- Last Modified:CST 2015-08-09 13:35:07 星期日
+-- Last Modified:CST 2015-08-10 17:28:11 星期一
 import Control.Monad
 import Text.ParserCombinators.Parsec
 import System.Environment
+import System.Posix.Files
 import Data.Time.Clock
 import Data.Time.LocalTime
 import Data.Time.Calendar
@@ -116,11 +117,14 @@ duration logs = let sorted  = sortBy (compare `trans2` fst) logs
 main :: IO ()
 main = do
     path   <- (foldr (++) "") <$> (sequence [liftM head getArgs , pure "/" ,dateToday ,pure ".log"])
-    parsed <- parseFromFile logFileParser path 
-    case parsed of
-      Left errMsg -> putStrLn $ show errMsg
-      Right val   -> let lm = logMap $ reverse val
-                         dm = Map.map duration lm
-                         vimtime = timeToTimeOfDay $ secondsToDiffTime $ foldr (+) 0 $  map snd (Map.toList dm)
-                      in putStrLn $ "Time you spent on VIM today: " ++ show vimtime
+    exist  <- fileExist path
+    if not exist
+       then putStrLn "No vim action today"
+       else do parsed <- parseFromFile logFileParser path 
+               case parsed of
+                  Left errMsg -> putStrLn $ show errMsg
+                  Right val   -> let lm = logMap $ reverse val
+                                     dm = Map.map duration lm
+                                     vimtime = timeToTimeOfDay $ secondsToDiffTime $ foldr (+) 0 $  map snd (Map.toList dm)
+                                  in putStrLn $ "Time you spent on VIM today: " ++ show vimtime
 
