@@ -1,6 +1,6 @@
 module Main where
 -- Author: lvwenlong_lambda@qq.com
--- Last Modified:CST 2015-08-10 17:28:11 星期一
+-- Last Modified:CST 2015-08-11 15:53:15 星期二
 import Control.Monad
 import Text.ParserCombinators.Parsec
 import System.Environment
@@ -109,7 +109,7 @@ trans2 func cvt c1 c2 = func (cvt c1) (cvt c2)
 
 duration :: [(Integer,VimLogAction)] -> Integer
 duration logs = let sorted  = sortBy (compare `trans2` fst) logs
-                    splited = splitWhen ((/= Write) . snd) sorted
+                    splited = split (keepDelimsL (whenElt ((/= Write) . snd))) sorted
                in sum $ map calcDura splited
                    where calcDura [] = 0
                          calcDura xs = (fst $ last xs) - (fst $ head xs)
