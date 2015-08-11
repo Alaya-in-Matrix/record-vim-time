@@ -1,6 +1,6 @@
 module Main where
 -- Author: lvwenlong_lambda@qq.com
--- Last Modified:CST 2015-08-11 15:53:15 星期二
+-- Last Modified:CST 2015-08-11 16:09:53 星期二
 import Control.Monad
 import Text.ParserCombinators.Parsec
 import System.Environment
@@ -120,11 +120,12 @@ main = do
     exist  <- fileExist path
     if not exist
        then putStrLn "No vim action today"
-       else do parsed <- parseFromFile logFileParser path 
+       else do parsed  <- parseFromFile logFileParser path 
+               dateStr <- dateToday
                case parsed of
                   Left errMsg -> putStrLn $ show errMsg
                   Right val   -> let lm = logMap $ reverse val
                                      dm = Map.map duration lm
                                      vimtime = timeToTimeOfDay $ secondsToDiffTime $ foldr (+) 0 $  map snd (Map.toList dm)
-                                  in putStrLn $ "Time you spent on VIM today: " ++ show vimtime
+                                  in putStrLn $ "Time you spent on VIM today(" ++ dateStr ++ "): " ++ show vimtime
 
