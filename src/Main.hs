@@ -1,6 +1,6 @@
 module Main where
 -- Author: lvwenlong_lambda@qq.com
--- Last Modified:CST 2015-08-11 16:09:53 星期二
+-- Last Modified:CST 2015-08-12 17:52:00 星期三
 import Control.Monad
 import Text.ParserCombinators.Parsec
 import System.Environment
@@ -103,6 +103,15 @@ logMap logs = logMap' (Map.empty) logs
                                Nothing  -> Map.insert f (pair:[]) m
                                Just rec -> Map.update (\_ -> Just (pair:rec)) f m
 
+-- vim allow you to change the file type,
+-- so it is possible that even with same file path
+-- you get different file type
+-- we use the last file type recorded
+filetypeMap :: [VimLog] -> Map.Map FilePath VimFileType
+filetypeMap logs = let names = map editedfile logs
+                       types = map filetype logs
+                    in Map.fromList $ zip names types
+
 
 trans2 :: (a->a->b)->(c->a)->(c->c->b)
 trans2 func cvt c1 c2 = func (cvt c1) (cvt c2)
@@ -124,8 +133,23 @@ main = do
                dateStr <- dateToday
                case parsed of
                   Left errMsg -> putStrLn $ show errMsg
-                  Right val   -> let lm = logMap $ reverse val
-                                     dm = Map.map duration lm
-                                     vimtime = timeToTimeOfDay $ secondsToDiffTime $ foldr (+) 0 $  map snd (Map.toList dm)
-                                  in putStrLn $ "Time you spent on VIM today(" ++ dateStr ++ "): " ++ show vimtime
+                  Right val   -> let lm  = logMap $ reverse val
+                                     ftm = filetypeMap val
+                                     dm  = Map.map duration lm
+                                     vimTotalTime = timeToTimeOfDay $ secondsToDiffTime $ foldr (+) 0 $  map snd (Map.toList dm)
+                                     filetypeTime = sortBy (flip  compare `trans2` snd) $ Map.toList $ Map.map (timeToTimeOfDay.secondsToDiffTime) $ getFileTypeTime ftm dm
+                                  in do putStrLn $ "Time you spent on VIM today(" ++ dateStr ++ "): " ++ show vimTotalTime
+                                        mapM_ (putStrLn.showLog) filetypeTime
+                                        putStrLn "============================="
 
+showLog :: (VimFileType,TimeOfDay) -> String
+showLog (ft, t) = ft ++ ": " ++ (show t)
+
+getFileTypeTime :: Map.Map FilePath VimFileType -> Map.Map FilePath Integer -> Map.Map VimFileType Integer
+getFileTypeTime typeLog fileLog = let fileLogList = Map.toList fileLog
+                                      typeLogList = map convertType fileLogList
+                                   in Map.fromListWith (+) typeLogList
+                                       where convertType :: (FilePath, Integer) -> (VimFileType, Integer)
+                                             convertType (name,t) =  case (Map.lookup name typeLog) of
+                                                                          Nothing -> error $ "fail to find file type for " ++ name
+                                                                          Just v  -> (v,t)
