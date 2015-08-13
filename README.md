@@ -1,7 +1,7 @@
 # Readme
 
 * Author: lvwenlong_lambda@qq.com
-* Last Modified:CST 2015-08-08 20:01:42 星期六
+* Last Modified:CST 2015-08-13 18:23:24 星期四
 
 ## About this project
 
@@ -38,3 +38,9 @@ this should be what you'll see:
 
 [vim-plugin-myfork]:https://github.com/Alaya-in-Matrix/vim-activity-log
 [vim-plugin-origin]:https://github.com/AD7six/vim-activity-log
+
+## TODO
+
+* support more options, for example:
+    * logs for a specific day
+    * all logs
