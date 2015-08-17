@@ -1,6 +1,6 @@
 module Main where
 -- Author: lvwenlong_lambda@qq.com
--- Last Modified:CST 2015-08-17 20:01:53 星期一
+-- Last Modified:CST 2015-08-24 13:07:04 星期一
 import Control.Monad
 import Text.ParserCombinators.Parsec
 import System.Environment
@@ -121,9 +121,9 @@ trans2 func cvt c1 c2 = func (cvt c1) (cvt c2)
 
 duration :: Integer->[(Integer,VimLogAction)] -> Integer
 duration maxInterval logs = let sorted   = sortBy (compare `trans2` fst) logs
-                               splited   = map (map fst) $ split (keepDelimsL (whenElt ((/= Write) . snd))) sorted
-                               durations = join $ map delta splited
-                              in sum $ filter (<= maxInterval) durations
+                                splited   = map (map fst) $ split (keepDelimsL (whenElt ((/= Write) . snd))) sorted
+                                durations = join $ map delta splited
+                             in sum $ filter (<= maxInterval) durations
                                   where delta [] = []
                                         delta xs = zipWith (-) (tail xs) xs
 
