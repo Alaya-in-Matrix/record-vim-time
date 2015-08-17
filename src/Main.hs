@@ -1,6 +1,6 @@
 module Main where
 -- Author: lvwenlong_lambda@qq.com
--- Last Modified:CST 2015-08-12 17:52:00 星期三
+-- Last Modified:CST 2015-08-17 19:41:09 星期一
 import Control.Monad
 import Text.ParserCombinators.Parsec
 import System.Environment
@@ -116,16 +116,23 @@ filetypeMap logs = let names = map editedfile logs
 trans2 :: (a->a->b)->(c->a)->(c->c->b)
 trans2 func cvt c1 c2 = func (cvt c1) (cvt c2)
 
-duration :: [(Integer,VimLogAction)] -> Integer
-duration logs = let sorted  = sortBy (compare `trans2` fst) logs
-                    splited = split (keepDelimsL (whenElt ((/= Write) . snd))) sorted
-               in sum $ map calcDura splited
-                   where calcDura [] = 0
-                         calcDura xs = (fst $ last xs) - (fst $ head xs)
+
+
+
+duration :: Integer->[(Integer,VimLogAction)] -> Integer
+duration ignoreTime logs = let sorted    = sortBy (compare `trans2` fst) logs
+                               splited   = map (map fst) $ split (keepDelimsL (whenElt ((/= Write) . snd))) sorted
+                               durations = join $ map delta splited
+                            in sum $ filter (<= ignoreTime) durations
+                                where delta [] = []
+                                      delta xs = zipWith (-) (tail xs) xs
 
 main :: IO ()
 main = do
-    path   <- (foldr (++) "") <$> (sequence [liftM head getArgs , pure "/" ,dateToday ,pure ".log"])
+    args   <- getArgs
+    today  <- dateToday
+    let path       = foldr (++) "" [head args, "/", today, ".log"]
+        ignoreTime = if (length args >= 2) then read (args !! 1) else (24 * 60 * 60)
     exist  <- fileExist path
     if not exist
        then putStrLn "No vim action today"
@@ -135,7 +142,7 @@ main = do
                   Left errMsg -> putStrLn $ show errMsg
                   Right val   -> let lm  = logMap $ reverse val
                                      ftm = filetypeMap val
-                                     dm  = Map.map duration lm
+                                     dm  = Map.map (duration ignoreTime) lm
                                      vimTotalTime = timeToTimeOfDay $ secondsToDiffTime $ foldr (+) 0 $  map snd (Map.toList dm)
                                      filetypeTime = sortBy (flip  compare `trans2` snd) $ Map.toList $ Map.map (timeToTimeOfDay.secondsToDiffTime) $ getFileTypeTime ftm dm
                                   in do putStrLn $ "Time you spent on VIM today(" ++ dateStr ++ "): " ++ show vimTotalTime
