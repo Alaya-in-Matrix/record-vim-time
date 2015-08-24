@@ -1,7 +1,7 @@
 # Readme
 
 * Author: lvwenlong_lambda@qq.com
-* Last Modified:CST 2015-08-24 13:15:34 星期一
+* Last Modified:CST 2015-08-24 13:16:39 星期一
 
 ## Intro
 
@@ -14,14 +14,14 @@ track how long you have been using VIM today
 * [vim-activity-log][vim-plugin-myfork] is forked from [here][vim-plugin-origin], I did some minor modification to make the log format more consistent.
 * this program could (and perhaps should) be used together with `crontab`
 
-## installation
+## Installation
 
 ```bash
 $ cabal sandbox init
 $ cabal install
 ```
 
-## usage
+## Usage
 
 you need to specify a folder to save log in `.vimrc`
 
