@@ -1,7 +1,7 @@
 # Readme
 
 * Author: lvwenlong_lambda@qq.com
-* Last Modified:CST 2015-08-24 13:16:39 星期一
+* Last Modified:CST 2015-08-24 13:20:55 星期一
 
 ## Intro
 
@@ -36,7 +36,15 @@ $ record-vim-time ~/.activity_vim
 ```
 this should be what you'll see:
 
-> Time you spent on VIM today: 03:11:37
+```log
+Time you spent on VIM today(2015/08/24): 00:21:29
+haskell: 00:15:48
+markdown: 00:03:42
+cabal: 00:01:02
+gitcommit: 00:00:33
+sh: 00:00:24
+=============================
+```
 
 there is the situation that: you opened vim, did some coding, then you walk away(to have lunch, for example) without closing vim and didn't save your buffer, then you get a very very long action interval, and the recorded active time 
 would be much longer than the time you actually spent on coding, to avoid this, you can specify a `maxInterval` like this
