@@ -1,7 +1,11 @@
 # Readme
 
 * Author: lvwenlong_lambda@qq.com
-* Last Modified:CST 2015-08-17 20:05:50 星期一
+* Last Modified:CST 2015-08-24 13:15:34 星期一
+
+## Intro
+
+track how long you have been using VIM today
 
 ## About this project
 
@@ -52,3 +56,9 @@ thus, intervals longer than 1800 seconds would be ignored
 * support more options, for example:
     * logs for a specific day
     * all logs
+
+### License
+
+Released under the WTFPL(DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE) license.
+
+
