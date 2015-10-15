@@ -1,6 +1,6 @@
 module Main where
 -- Author: lvwenlong_lambda@qq.com
--- Last Modified:CST 2015-08-24 13:07:04 星期一
+-- Last Modified:2015年10月15日 星期四 11时17分14秒 四
 import Control.Monad
 import Text.ParserCombinators.Parsec
 import System.Environment
@@ -48,7 +48,7 @@ logParser :: Parser VimLog
 logParser = VimLog <$> (logTimeParser  <* delimiter)
                    <*> (actionParser   <* delimiter)
                    <*> (filePathParser <* delimiter)
-                   <*> (filePathParser <* delimiter)
+                   <*> (fileTypeParser <* delimiter)
                    <*> branchParser
    where delimiter = char ';'
 
