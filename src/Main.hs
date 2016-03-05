@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
 -- Author: lvwenlong_lambda@qq.com
--- Last Modified:2016年03月05日 星期六 19时54分28秒 六
+-- Last Modified:2016年03月05日 星期六 20时19分02秒 六
 import Control.Monad
 import Text.ParserCombinators.Parsec
 import System.Posix.Files
@@ -13,7 +13,6 @@ import Data.List hiding(insert, lookup)
 import Data.List.Split hiding(endBy)
 import qualified Data.Map as Map
 import Options.Generic
-import Debug.Trace
 
 data VimLogTime = VimLogTime {
     vimLogYear   :: Integer
@@ -50,7 +49,7 @@ logParser :: Parser VimLog
 logParser = VimLog <$> (logTimeParser  <* delimiter)
                    <*> (actionParser   <* delimiter)
                    <*> (filePathParser <* delimiter)
-                   <*> (filePathParser <* delimiter)
+                   <*> (fileTypeParser <* delimiter)
                    <*> branchParser
    where delimiter = char ';'
 
@@ -101,8 +100,8 @@ logMap = foldr updateMap Map.empty
                 file = editedfile log
                 rec  = Map.lookup file map
              in case rec of
-                  Nothing  -> Map.insert file [(sec, act)] map
-                  Just rec -> Map.adjust ((sec, act):) file map
+                  Nothing -> Map.insert file [(sec, act)] map
+                  Just _  -> Map.adjust ((sec, act):) file map
 
 -- vim allow you to change the file type,
 -- so it is possible that even with same file path
