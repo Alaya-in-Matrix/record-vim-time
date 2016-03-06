@@ -1,18 +1,18 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
--- Author: lvwenlong_lambda@qq.com
--- Last Modified:2016年03月05日 星期六 20时19分02秒 六
-import Control.Monad
 import Text.ParserCombinators.Parsec
-import System.Posix.Files
+import System.Posix.Files(fileExist)
 import Data.Time.Clock
 import Data.Time.LocalTime
 import Data.Time.Calendar
-import Data.List hiding(insert, lookup)
-import Data.List.Split hiding(endBy)
+import Data.List (sortBy)
+import Data.List.Split(split, keepDelimsL, whenElt)
 import qualified Data.Map as Map
 import Options.Generic
+
+-- Author: lvwenlong_lambda@qq.com
+-- Last Modified:2016年03月06日 星期日 10时40分04秒 日
 
 data VimLogTime = VimLogTime {
     vimLogYear   :: Integer
@@ -41,7 +41,7 @@ secondOfDay t = let h = toInteger $ vimLogHour   t
                  in h * 3600 + m * 60 + s
 
 dateToday :: IO String -- (year, month, day)
-dateToday = liftM (map replace . showGregorian . utctDay) getCurrentTime
+dateToday = (map replace . showGregorian . utctDay) <$> getCurrentTime
     where replace '-' = '/'
           replace  c   = c
 
@@ -98,8 +98,7 @@ logMap = foldr updateMap Map.empty
             let sec  = secondOfDay $ time log
                 act  = action log
                 file = editedfile log
-                rec  = Map.lookup file map
-             in case rec of
+             in case Map.lookup file map of
                   Nothing -> Map.insert file [(sec, act)] map
                   Just _  -> Map.adjust ((sec, act):) file map
 
@@ -147,15 +146,19 @@ main = do
 
 summary :: Maybe Integer -> [VimLog] -> IO ()
 summary maxInterval val = 
-  let logmap = logMap $ reverse val
-      ftmp   = filetypeMap val
-      durmap = Map.map (duration maxInterval) logmap
-      filetypeTime = Map.toList $ getFileTypeTime ftmp durmap 
+  let logmap       = logMap $ reverse val
+      ftmp         = filetypeMap val
+      durmap       = Map.map (duration maxInterval) logmap
+      filetypeTime = Map.toList $ getFileTypeTime ftmp durmap
    in do mapM_ (putStrLn.showLog) $ sortBy (flip compare `trans2` snd) filetypeTime
+         putStrLn ""
+         putStrLn $ "Total time spent: " ++ secToTimeStr (sum $ map snd filetypeTime)
          putStrLn "============================="
 
 showLog :: (VimFileType,Integer) -> String
-showLog (ft, sec) = ft ++ ": " ++ show (timeToTimeOfDay.secondsToDiffTime $ sec)
+showLog (ft, sec) = ft ++ ": " ++ secToTimeStr sec
+
+secToTimeStr = show . timeToTimeOfDay . secondsToDiffTime
 
 getFileTypeTime :: Map.Map FilePath VimFileType 
                 -> Map.Map FilePath Integer 
