@@ -12,7 +12,7 @@ import qualified Data.Map as Map
 import Options.Generic
 
 -- Author: lvwenlong_lambda@qq.com
--- Last Modified:2016年03月06日 星期日 10时40分04秒 日
+-- Last Modified:2016年03月18日 星期五 00时18分22秒 五
 
 data VimLogTime = VimLogTime {
     vimLogYear   :: Integer
@@ -41,7 +41,7 @@ secondOfDay t = let h = toInteger $ vimLogHour   t
                  in h * 3600 + m * 60 + s
 
 dateToday :: IO String -- (year, month, day)
-dateToday = (map replace . showGregorian . utctDay) <$> getCurrentTime
+dateToday = (map replace . showGregorian . localDay . zonedTimeToLocalTime) <$> getZonedTime
     where replace '-' = '/'
           replace  c   = c
 
